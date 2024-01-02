@@ -4,6 +4,7 @@ import Spinner from "./Spinner";
 import PropTypes from "prop-types";
 import InfiniteScroll from "react-infinite-scroll-component";
 
+
 export class News extends Component {
   static defaultProps = {
     country: "in",
@@ -14,6 +15,7 @@ export class News extends Component {
     country: PropTypes.string,
     pageSize: PropTypes.number,
     category: PropTypes.string,
+    setProgress: PropTypes.func,
   };
   capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -30,8 +32,10 @@ export class News extends Component {
     document.title = `${this.capitalizeFirstLetter(
       this.props.category
     )} - NewsMonkey App`;
+    this.updateNews = this.updateNews.bind(this);
   }
   async updateNews(pageNo) {
+    this.props.setProgress(0);
     const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=0f58d46f5b254efeaff27b80ee0d1943&page=${this.state.page}&pageSize=${this.props.pageSize}`;
     this.setState({ loading: true });
     let data = await fetch(url);
@@ -42,6 +46,7 @@ export class News extends Component {
       totalResults: parsedData.totalResults,
       loading: false,
     });
+    this.props.setProgress(100);
   }
   async componentDidMount() {
     // let url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=0f58d46f5b254efeaff27b80ee0d1943&page=1&pageSize=${this.props.pageSize}`;
