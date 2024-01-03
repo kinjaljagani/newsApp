@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Navbar } from "./components/Navbar";
+import Navbar  from "./components/Navbar";
 import { News } from "./components/News";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
