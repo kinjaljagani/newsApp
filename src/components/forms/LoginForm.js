@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+const EntriesPerPage = 5;
 const LoginForm = () => {
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
@@ -10,7 +10,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [idCounter, setIdCounter] = useState(1);
   const [updateId, setUpdateId] = useState(null);
-
+  const [currentPage, setCurrentPage] = useState(1);
   const [allEntry, setAllEntry] = useState([]);
   const navigate = useNavigate();
   const handleDelete = (id) => {
@@ -80,7 +80,7 @@ const LoginForm = () => {
         const updatedEntries = [...allEntry, newEntry];
 
     // Renumber entries based on their index in the array
-    const renumberedEntries = updatedEntries.map((entry, index) => ({
+    const renumberedEntries = updatedEntries.map((entry, index) => ({ 
       ...entry,
       id: index + 1,
     }));
@@ -99,6 +99,11 @@ const LoginForm = () => {
     }
   };
 
+  const totalPages = Math.ceil(allEntry.length / EntriesPerPage);
+  const paginatedEntries = allEntry.slice(
+    (currentPage - 1) * EntriesPerPage,
+    currentPage * EntriesPerPage
+  );
   
   return (
     <div>
@@ -172,7 +177,7 @@ const LoginForm = () => {
         </button>
       </form>
       <div>
-        {allEntry.map((curElem) => {
+        {paginatedEntries.map((curElem) => {
           return (
             <div key={curElem.id} className="container w-50">
               <div className="row">
@@ -196,6 +201,16 @@ const LoginForm = () => {
             </div>
           );
         })}
+        <div className="d-flex justify-content-center m-2 gap-2">
+        {/* Pagination controls */}
+        <button onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}>
+          Previous
+        </button>
+        <span>{`Page ${currentPage} of ${totalPages}`}</span>
+        <button onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}>
+          Next
+        </button>
+      </div>
       </div>
       {/* <div className="dropdown-divider"></div>
   <a className="dropdown-item" href="/">New around here? Sign up</a>

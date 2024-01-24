@@ -1,46 +1,28 @@
 import React, { useState, useEffect } from "react";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const initialValues = { fname: "", lname: "", email: "", password: "" };
   const [formValues, setFormValues] = useState(initialValues);
   const [formErrors, setFormErrors] = useState({});
   const [isSubmit, setIsSubmit] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
-  //   const [allEntry, setAllEntry] = useState([]);
-  //   const navigate = useNavigate();
+  
   const submitForm = (e) => {
     e.preventDefault();
     setFormErrors(validate(formValues));
     setIsSubmit(true);
-    // if (fname === "") {
-    //   toast.error("First Name is required");
-    // } else if (lname === "") {
-    //   toast.error("Last Name is required");
-    // } else if (email === "") {
-    //   toast.error("Email is required");
-    // } else if (password === "") {
-    //   toast.error("Password is required");
-    // } else {
-    //   localStorage.setItem("fname", fname);
-    //   localStorage.setItem("lname", lname);
-    //   localStorage.setItem("email", email);
-    //   localStorage.setItem("password", password);
-    //   navigate("/profile");
-    // }
 
-    // const newEntry = {
-    //   fname: fname,
-    //   lname: lname,
-    //   email: email,
-    //   password: password,
-    // };
-    // setAllEntry([...allEntry, newEntry]);
-    // console.log(allEntry);
+    if (Object.keys(formErrors).length === 0) {
+      localStorage.setItem("profileDetails", JSON.stringify(formValues));
+      // If there are no errors, redirect to the profile page
+      navigate("/profile");
+    }
   };
   useEffect(() => {
     console.log(formErrors);
@@ -70,7 +52,7 @@ const LoginForm = () => {
     }else if(value.password.length > 10){
         errors.password = "password must be less then 10 character!";
     }
-    return errors;
+    return {};
   };
   return (
     <div className="container mt-5 pt-5">
@@ -138,36 +120,14 @@ const LoginForm = () => {
         </div>
         <p className="text-danger">{formErrors.password}</p>
         <div className="mb-3">
-          {/* <div className="form-check">
-        <input type="checkbox" className="form-check-input" id="dropdownCheck"/>
-        <label className="form-check-label" htmlFor="dropdownCheck">
-          Remember me
-        </label>
-      </div> */}
+          
         </div>
         <button type="submit" className="btn btn-primary">
           Register
         </button>
       </form>
-      {/* <div>
-        {allEntry.map((curElem) => {
-          return (
-            <div className="container w-50">
-              <div className="row">
-                <div className="col d-flex shadow bg-primary px-5 py-2 align-items-center justify-content-between m-auto">
-                  <p className="m-0">{curElem.fname}</p>
-                  <p className="m-0">{curElem.lname}</p>
-                  <p className="m-0">{curElem.email}</p>
-                  <p className="m-0">{curElem.password}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </div> */}
-      {/* <div className="dropdown-divider"></div>
-  <a className="dropdown-item" href="/">New around here? Sign up</a>
-  <a className="dropdown-item" href="/">Forgot password?</a> */}
+      
+      
     </div>
   );
 };
