@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
@@ -12,13 +12,21 @@ const LoginForm = () => {
   const [updateId, setUpdateId] = useState(null);
 
   const [allEntry, setAllEntry] = useState([]);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const handleDelete = (id) => {
     const updatedEntries = allEntry.filter((entry) => entry.id !== id);
-    setAllEntry(updatedEntries);
-    localStorage.setItem("entries", JSON.stringify(updatedEntries));
+
+    // Renumber entries based on their index in the array
+    const renumberedEntries = updatedEntries.map((entry, index) => ({
+      ...entry,
+      id: index + 1,
+    }));
+
+    setAllEntry(renumberedEntries);
+    localStorage.setItem("entries", JSON.stringify(renumberedEntries));
     toast.success("Entry deleted successfully");
   };
+
   const handleUpdate = (id) => {
     const entryToUpdate = allEntry.find((entry) => entry.id === id);
     setFname(entryToUpdate.fname);
@@ -33,7 +41,10 @@ const LoginForm = () => {
     setAllEntry(storedEntries);
 
     // Determine the next available ID based on the existing entries
-    const maxId = storedEntries.reduce((max, entry) => (entry.id > max ? entry.id : max), 0);
+    const maxId = storedEntries.reduce(
+      (max, entry) => (entry.id > max ? entry.id : max),
+      0
+    );
     setIdCounter(maxId + 1);
   }, []);
   const submitForm = (e) => {
@@ -54,7 +65,7 @@ const LoginForm = () => {
         email: email,
         password: password,
       };
-  
+
       // Check if it's an update or a new entry
       if (updateId) {
         // If it's an update, replace the existing entry with the updated one
@@ -66,13 +77,20 @@ const LoginForm = () => {
         toast.success("Entry updated successfully");
         setUpdateId(null); // Reset updateId after updating
       } else {
-        // If it's a new entry, add it to the array
-        localStorage.setItem("entries", JSON.stringify([...allEntry, newEntry]));
-        setAllEntry([...allEntry, newEntry]);
-        toast.success("Entry added successfully");
-        setIdCounter(idCounter + 1);
+        const updatedEntries = [...allEntry, newEntry];
+
+    // Renumber entries based on their index in the array
+    const renumberedEntries = updatedEntries.map((entry, index) => ({
+      ...entry,
+      id: index + 1,
+    }));
+
+    localStorage.setItem("entries", JSON.stringify(renumberedEntries));
+    setAllEntry(renumberedEntries);
+    toast.success("Entry added successfully");
+    setIdCounter(idCounter + 1);
       }
-  
+
       // Clear the form fields
       setFname("");
       setLname("");
@@ -80,6 +98,7 @@ const LoginForm = () => {
       setPassword("");
     }
   };
+
   
   return (
     <div>
@@ -151,27 +170,27 @@ const LoginForm = () => {
         <button type="submit" className="btn btn-primary">
           Submit
         </button>
-       
       </form>
       <div>
         {allEntry.map((curElem) => {
           return (
-            <div key={curElem.id}  className="container w-50">
+            <div key={curElem.id} className="container w-50">
               <div className="row">
                 <div className="col d-flex shadow bg-primary px-5 py-2 align-items-center justify-content-between m-auto">
-                  
                   <p className="m-0">{curElem.id}</p>
                   <p className="m-0">{curElem.fname}</p>
                   <p className="m-0">{curElem.lname}</p>
                   <p className="m-0">{curElem.email}</p>
                   <p className="m-0">{curElem.password}</p>
                   <div>
-                    <button onClick={() => handleDelete(curElem.id)}>Delete</button>
+                    <button onClick={() => handleDelete(curElem.id)}>
+                      Delete
+                    </button>
                     &nbsp;
-                    <button onClick={() => handleUpdate(curElem.id)}>Update</button>
-
+                    <button onClick={() => handleUpdate(curElem.id)}>
+                      Update
+                    </button>
                   </div>
-                  
                 </div>
               </div>
             </div>
@@ -184,5 +203,4 @@ const LoginForm = () => {
     </div>
   );
 };
-
 export default LoginForm;
