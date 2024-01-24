@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import React, { useState } from "react";
+import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
@@ -8,9 +8,34 @@ const LoginForm = () => {
   const [lname, setLname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [idCounter, setIdCounter] = useState(1);
+  const [updateId, setUpdateId] = useState(null);
 
   const [allEntry, setAllEntry] = useState([]);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  const handleDelete = (id) => {
+    const updatedEntries = allEntry.filter((entry) => entry.id !== id);
+    setAllEntry(updatedEntries);
+    localStorage.setItem("entries", JSON.stringify(updatedEntries));
+    toast.success("Entry deleted successfully");
+  };
+  const handleUpdate = (id) => {
+    const entryToUpdate = allEntry.find((entry) => entry.id === id);
+    setFname(entryToUpdate.fname);
+    setLname(entryToUpdate.lname);
+    setEmail(entryToUpdate.email);
+    setPassword(entryToUpdate.password);
+    setUpdateId(id);
+  };
+  useEffect(() => {
+    // Load data from localStorage when the component mounts
+    const storedEntries = JSON.parse(localStorage.getItem("entries")) || [];
+    setAllEntry(storedEntries);
+
+    // Determine the next available ID based on the existing entries
+    const maxId = storedEntries.reduce((max, entry) => (entry.id > max ? entry.id : max), 0);
+    setIdCounter(maxId + 1);
+  }, []);
   const submitForm = (e) => {
     e.preventDefault();
     if (fname === "") {
@@ -22,22 +47,40 @@ const LoginForm = () => {
     } else if (password === "") {
       toast.error("Password is required");
     } else {
-      localStorage.setItem("fname", fname);
-      localStorage.setItem("lname", lname);
-      localStorage.setItem("email", email);
-      localStorage.setItem("password", password);
-      navigate("/profile");
+      const newEntry = {
+        id: updateId || idCounter, // If updateId is set, use it as ID, otherwise use idCounter
+        fname: fname,
+        lname: lname,
+        email: email,
+        password: password,
+      };
+  
+      // Check if it's an update or a new entry
+      if (updateId) {
+        // If it's an update, replace the existing entry with the updated one
+        const updatedEntries = allEntry.map((entry) =>
+          entry.id === updateId ? newEntry : entry
+        );
+        setAllEntry(updatedEntries);
+        localStorage.setItem("entries", JSON.stringify(updatedEntries));
+        toast.success("Entry updated successfully");
+        setUpdateId(null); // Reset updateId after updating
+      } else {
+        // If it's a new entry, add it to the array
+        localStorage.setItem("entries", JSON.stringify([...allEntry, newEntry]));
+        setAllEntry([...allEntry, newEntry]);
+        toast.success("Entry added successfully");
+        setIdCounter(idCounter + 1);
+      }
+  
+      // Clear the form fields
+      setFname("");
+      setLname("");
+      setEmail("");
+      setPassword("");
     }
-
-    const newEntry = {
-      fname: fname,
-      lname: lname,
-      email: email,
-      password: password,
-    };
-    setAllEntry([...allEntry, newEntry]);
-    console.log(allEntry);
   };
+  
   return (
     <div>
       <form className="px-4 py-5 my-4" onSubmit={submitForm}>
@@ -106,19 +149,29 @@ const LoginForm = () => {
       </div> */}
         </div>
         <button type="submit" className="btn btn-primary">
-          Register
+          Submit
         </button>
+       
       </form>
       <div>
         {allEntry.map((curElem) => {
           return (
-            <div className="container w-50">
+            <div key={curElem.id}  className="container w-50">
               <div className="row">
                 <div className="col d-flex shadow bg-primary px-5 py-2 align-items-center justify-content-between m-auto">
+                  
+                  <p className="m-0">{curElem.id}</p>
                   <p className="m-0">{curElem.fname}</p>
                   <p className="m-0">{curElem.lname}</p>
                   <p className="m-0">{curElem.email}</p>
                   <p className="m-0">{curElem.password}</p>
+                  <div>
+                    <button onClick={() => handleDelete(curElem.id)}>Delete</button>
+                    &nbsp;
+                    <button onClick={() => handleUpdate(curElem.id)}>Update</button>
+
+                  </div>
+                  
                 </div>
               </div>
             </div>
