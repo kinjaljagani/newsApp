@@ -77,6 +77,11 @@ const Navbar = (props) => {
                   </Link>
                 </li>
                 <li className="nav-item">
+                  <Link className="nav-link" to="/formikform">
+                    FormikForm
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <Link className="nav-link" to="/profile">
                     Profile (protected)
                   </Link>

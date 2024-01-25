@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LoadingBar from "react-top-loading-bar";
 import LoginForm from "./components/forms/LoginForm";
 import RegistrationForm from "./components/forms/RegistrationForm";
+import FormikForm from "./components/forms/FormikForm"
 import Profile from "./components/Profile";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -140,6 +141,7 @@ const App = () => {
             />
             <Route exact path="/login" element={<LoginForm />} />
             <Route exact path="/register" element={<RegistrationForm />} />
+            <Route exact path="/formikform" element={<FormikForm />} />
             <Route exact path="/profile" element={<Profile />} />
           </Routes>
         </BrowserRouter>
