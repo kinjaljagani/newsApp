@@ -3,22 +3,41 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { signUpSchema } from "../../schemas";
 
+
 const FormikForm = () => {
-  const initialValues = { fname: "", lname: "", email: "", password: "" };
+  const initialValues = {
+    fname: "",
+    lname: "",
+    email: "",
+    password: "",
+    banks: [{ accno: "", accname: "", ifsc: "", bankname: "" }],
+  };
+
   const navigate = useNavigate();
 
-  const { handleChange, handleSubmit, values, errors } = useFormik({
+  const { handleChange, handleSubmit, values, errors, touched, setFieldTouched, setFieldValue } = useFormik({
     initialValues,
-    validationSchema: signUpSchema,  // Assuming you have a validation schema
+    validationSchema: signUpSchema,
     onSubmit: (formValues) => {
-      // Your form submission logic goes here
-      // For example, you can save the formValues to localStorage
       localStorage.setItem("profileDetails", JSON.stringify(formValues));
-
-      // After successful submission, navigate to the profile page
       navigate("/profile");
     },
   });
+
+  const handleAddBank = () => {
+    setFieldTouched(`banks[${values.banks.length - 1}].accno`, true);
+    setFieldTouched(`banks[${values.banks.length - 1}].accname`, true);
+    setFieldTouched(`banks[${values.banks.length - 1}].ifsc`, true);
+    setFieldTouched(`banks[${values.banks.length - 1}].bankname`, true);
+    setFieldValue("banks", [...values.banks, { accno: "", accname: "", ifsc: "", bankname: "" }]);
+  };
+  const handleRemoveBank = () => {
+    if (values.banks.length > 1) {
+      setFieldValue("banks", values.banks.slice(0, -1));
+    }
+  };
+
+
 
   return (
     <div className="container mt-5 pt-5">
@@ -36,9 +55,11 @@ const FormikForm = () => {
             placeholder="Enter your first name"
             value={values.fname}
             onChange={handleChange}
+            onBlur={() => setFieldTouched(`fname`, true)}
           />
+          <p className="text-danger">{touched.fname && errors.fname}</p>
         </div>
-        <p className="text-danger">{errors.fname}</p>
+
         <div className="mb-3">
           <label htmlFor="lname" className="form-label">
             Last Name
@@ -51,9 +72,11 @@ const FormikForm = () => {
             placeholder="Enter your Last name"
             value={values.lname}
             onChange={handleChange}
+            onBlur={() => setFieldTouched(`lname`, true)}
           />
+          <p className="text-danger">{touched.lname && errors.lname}</p>
         </div>
-        <p className="text-danger">{errors.lname}</p>
+
         <div className="mb-3">
           <label htmlFor="email" className="form-label">
             Email address
@@ -66,9 +89,11 @@ const FormikForm = () => {
             placeholder="email@example.com"
             value={values.email}
             onChange={handleChange}
+            onBlur={() => setFieldTouched(`email`, true)}
           />
+          <p className="text-danger">{touched.email && errors.email}</p>
         </div>
-        <p className="text-danger">{errors.email}</p>
+
         <div className="mb-3">
           <label htmlFor="password" className="form-label">
             Password
@@ -81,11 +106,95 @@ const FormikForm = () => {
             placeholder="Password"
             value={values.password}
             onChange={handleChange}
+            onBlur={() => setFieldTouched(`password`, true)}
           />
+          <p className="text-danger">{touched.password && errors.password}</p>
         </div>
-        <p className="text-danger">{errors.password}</p>
-        <div className="mb-3"></div>
-        <button type="submit" className="btn btn-primary">
+        
+        <div>
+          {values.banks.map((bank, index) => (
+            <div key={index} className="d-flex">
+              <div className="m-3">
+                <label htmlFor={`banks[${index}].accno`} className="form-label">
+                  Account number
+                </label>
+                <input
+                  type="text"
+                  name={`banks[${index}].accno`}
+                  className="form-control"
+                  id={`banks[${index}].accno`}
+                  autoComplete="off"
+                  placeholder="Enter your Account Number"
+                  value={bank.accno}
+                  onChange={handleChange}
+                  onBlur={() => setFieldTouched(`banks[${index}].accno`, true)}
+                />
+                <p className="text-danger">{touched.banks && touched.banks[index]?.accno && errors.banks && errors.banks[index]?.accno}</p>
+              </div>
+              <div className="m-3">
+                <label htmlFor={`banks[${index}].accname`} className="form-label">
+                  Name of Account Holder
+                </label>
+                <input
+                  type="text"
+                  name={`banks[${index}].accname`}
+                  className="form-control"
+                  id={`banks[${index}].accname`}
+                  autoComplete="off"
+                  placeholder="Enter name of account holder"
+                  value={bank.accname}
+                  onChange={handleChange}
+                  onBlur={() => setFieldTouched(`banks[${index}].accname`, true)}
+                />
+                <p className="text-danger">{touched.banks && touched.banks[index]?.accname && errors.banks && errors.banks[index]?.accname}</p>
+              </div>
+              <div className="m-3">
+                <label htmlFor={`banks[${index}].ifsc`} className="form-label">
+                  IFSC code
+                </label>
+                <input
+                  type="text"
+                  name={`banks[${index}].ifsc`}
+                  className="form-control"
+                  id={`banks[${index}].ifsc`}
+                  autoComplete="off"
+                  placeholder="Enter IFSC code"
+                  value={bank.ifsc}
+                  onChange={handleChange}
+                  onBlur={() => setFieldTouched(`banks[${index}].ifsc`, true)}
+                />
+                <p className="text-danger">{touched.banks && touched.banks[index]?.ifsc && errors.banks && errors.banks[index]?.ifsc}</p>
+              </div>
+              <div className="m-3">
+                <label htmlFor={`banks[${index}].bankname`} className="form-label">
+                  Enter Bank Name
+                </label>
+                <input
+                  type="text"
+                  name={`banks[${index}].bankname`}
+                  className="form-control"
+                  id={`banks[${index}].bankname`}
+                  autoComplete="off"
+                  placeholder="Enter Bank name"
+                  value={bank.bankname}
+                  onChange={handleChange}
+                  onBlur={() => setFieldTouched(`banks[${index}].bankname`, true)}
+                />
+                <p className="text-danger">{touched.banks && touched.banks[index]?.bankname && errors.banks && errors.banks[index]?.bankname}</p>
+              </div>
+            </div>
+          ))}
+
+          <button type="button" className="btn btn-primary mx-1" onClick={handleAddBank}>
+            Add Bank
+          </button>
+
+          <button type="button" className="btn btn-primary mx-1" onClick={handleRemoveBank}>
+            Remove Bank
+          </button>
+        </div>
+
+        <button type="submit" className="btn btn-primary m-3">
           Register
         </button>
       </form>
