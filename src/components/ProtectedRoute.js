@@ -1,19 +1,23 @@
-// import React from 'react';
-// import { Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
-// const ProtectedRoute = ({ element: Element, auth, ...rest }) => {
-//   return (
-//     <Route
-//       {...rest}
-//       element={(props) =>
-//         auth ? (
-//           <Element {...props} />
-//         ) : (
-//           <Navigate to="/login" replace state={{ from: props.location }} />
-//         )
-//       }
-//     />
-//   );
-// };
+function ProtectedRoute(props) {
+    const {Component} = props;
+    const navigate = useNavigate();
 
-// export default ProtectedRoute;
+    useEffect(()=>{
+        let profileDetails = localStorage.getItem('profileDetails');
+        if(!profileDetails){
+            navigate('/formikForm');
+        }
+    });
+
+    return(
+        <div>
+            <Component/>
+        </div>
+    )
+
+}
+
+export default ProtectedRoute;

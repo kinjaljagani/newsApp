@@ -9,6 +9,7 @@ import FormikForm from "./components/forms/FormikForm"
 import Profile from "./components/Profile";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ProtectedRoute from "./components/ProtectedRoute"
 
 
 const App = () => {
@@ -142,12 +143,12 @@ const App = () => {
             <Route exact path="/login" element={<LoginForm />} />
             <Route exact path="/register" element={<RegistrationForm />} />
             <Route exact path="/formikform" element={<FormikForm />} />
-            <Route exact path="/profile" element={<Profile />} />
+            <Route exact path="/profile" element={<ProtectedRoute Component={Profile}/>}/>
           </Routes>
         </BrowserRouter>
         <ToastContainer />
       </div>
-    );
+     );
   
 }
 export default App;
